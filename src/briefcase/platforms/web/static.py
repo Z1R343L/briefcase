@@ -170,7 +170,6 @@ class StaticWebBuildCommand(StaticWebMixin, BuildCommand):
                     "name": app.formal_name,
                     "description": app.description,
                     "version": app.version,
-                    "splashscreen": {"autoclose": True},
                     "terminal": False,
                     # Ensure that we're using Unix path separators, as the content
                     # will be parsed by pyscript in the browser.
@@ -178,6 +177,8 @@ class StaticWebBuildCommand(StaticWebMixin, BuildCommand):
                         f'/{"/".join(wheel.relative_to(self.project_path(app)).parts)}'
                         for wheel in sorted(self.wheel_path(app).glob("*.whl"))
                     ],
+                    [splashscreen]
+                    autoclose = true
                 }
                 tomli_w.dump(config, f)
 
