@@ -163,19 +163,23 @@ def create_wheel(path, package="dummy", version="1.2.3", extra_content=None):
 
     create_zip_file(
         wheel_filename,
-        content=[
-            (f"{package}/__init__.py", ""),
-            (f"{package}/app.py", "# This is the app"),
-        ]
-        + (extra_content if extra_content else [])
-        + [
-            # Create an empty dist-info
-            (f"{package}-{version}.dist-info/INSTALLER", ""),
-            (f"{package}-{version}.dist-info/METADATA", ""),
-            (f"{package}-{version}.dist-info/WHEEL", ""),
-            (f"{package}-{version}.dist-info/top_level.txt", ""),
-            (f"{package}-{version}.dist-info/RECORD", ""),
-        ],
+        content=(
+            (
+                [
+                    (f"{package}/__init__.py", ""),
+                    (f"{package}/app.py", "# This is the app"),
+                ]
+                + (extra_content or [])
+            )
+            + [
+                # Create an empty dist-info
+                (f"{package}-{version}.dist-info/INSTALLER", ""),
+                (f"{package}-{version}.dist-info/METADATA", ""),
+                (f"{package}-{version}.dist-info/WHEEL", ""),
+                (f"{package}-{version}.dist-info/top_level.txt", ""),
+                (f"{package}-{version}.dist-info/RECORD", ""),
+            ]
+        ),
     )
 
     return wheel_filename

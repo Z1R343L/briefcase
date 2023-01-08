@@ -11,11 +11,7 @@ from ....utils import create_file
 
 def create_emulator(root_path):
     # Create `emulator` within `root_path`.
-    if sys.platform == "win32":
-        emulator_bin = "emulator.exe"
-    else:
-        emulator_bin = "emulator"
-
+    emulator_bin = "emulator.exe" if sys.platform == "win32" else "emulator"
     create_file(root_path / "emulator" / emulator_bin, "The Emulator", chmod=0o755)
 
 

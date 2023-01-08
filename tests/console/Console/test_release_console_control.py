@@ -10,9 +10,9 @@ def test_console_is_controlled():
     console.is_console_controlled = True
 
     with console.release_console_control():
-        assert console.is_console_controlled is False
+        assert not console.is_console_controlled
 
-    assert console.is_console_controlled is True
+    assert console.is_console_controlled
 
 
 def test_console_is_not_controlled():

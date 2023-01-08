@@ -461,7 +461,7 @@ def test_app_requirements_empty_requires(
         assert f.read() == ""
 
     # Original app definitions haven't changed
-    assert myapp.requires == []
+    assert not myapp.requires
     assert myapp.test_requires is None
 
 

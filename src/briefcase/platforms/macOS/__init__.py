@@ -57,8 +57,7 @@ def macOS_log_clean_filter(line):
     ):
         return None
 
-    match = MACOS_LOG_PREFIX_REGEX.match(line)
-    if match:
+    if match := MACOS_LOG_PREFIX_REGEX.match(line):
         groups = match.groupdict()
         return groups["content"], bool(groups["subsystem"])
 
@@ -599,19 +598,17 @@ password:
                     team_id = self.team_id_from_identity(identity_name)
 
             self.sign_app(app=app, identity=identity)
-        else:
-            if notarize_app:
-                raise BriefcaseCommandError(
-                    "Can't notarize an app that hasn't been signed"
-                )
+        elif notarize_app:
+            raise BriefcaseCommandError(
+                "Can't notarize an app that hasn't been signed"
+            )
 
-        if packaging_format == "app":
-            if notarize_app:
-                self.logger.info(
-                    f"Notarizing app using team ID {team_id}...",
-                    prefix=app.app_name,
-                )
-                self.notarize(self.binary_path(app), team_id=team_id)
+        if packaging_format == "app" and notarize_app:
+            self.logger.info(
+                f"Notarizing app using team ID {team_id}...",
+                prefix=app.app_name,
+            )
+            self.notarize(self.binary_path(app), team_id=team_id)
 
         if packaging_format == "dmg":
             self.logger.info("Building DMG...", prefix=app.app_name)
@@ -651,7 +648,7 @@ password:
             if icon_filename:
                 dmg_settings["icon"] = os.fsdecode(icon_filename)
 
-            try:
+            with suppress(AttributeError):
                 image_filename = self.base_path / f"{app.installer_background}.png"
                 if image_filename.exists():
                     dmg_settings["background"] = os.fsdecode(image_filename)
@@ -659,10 +656,6 @@ password:
                     self.logger.warning(
                         f"Can't find {app.installer_background}.png to use as DMG background"
                     )
-            except AttributeError:
-                # No installer background image provided
-                pass
-
             dmg_path = self.distribution_path(app, packaging_format=packaging_format)
             self.dmgbuild.build_dmg(
                 filename=os.fsdecode(dmg_path),

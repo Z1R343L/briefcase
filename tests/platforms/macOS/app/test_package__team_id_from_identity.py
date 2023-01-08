@@ -7,13 +7,12 @@ from briefcase.platforms.macOS.app import macOSAppPackageCommand
 
 @pytest.fixture
 def package_command(tmp_path):
-    command = macOSAppPackageCommand(
+    return macOSAppPackageCommand(
         logger=Log(),
         console=Console(),
         base_path=tmp_path / "base_path",
         data_path=tmp_path / "briefcase",
     )
-    return command
 
 
 @pytest.mark.parametrize(

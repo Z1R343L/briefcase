@@ -287,7 +287,7 @@ class Log:
         # build log header and export buffered log from Rich
         uname = platform.uname()
         sanitized_env_vars = "\n".join(
-            f"    {env_var}={value if not SENSITIVE_SETTING_RE.search(env_var) else '********************'}"
+            f"    {env_var}={'********************' if SENSITIVE_SETTING_RE.search(env_var) else value}"
             for env_var, value in sorted(command.tools.os.environ.items())
         )
         return (
@@ -468,10 +468,7 @@ class Console:
             error_message="Please enter Y or N",
             transform=lambda s: s.lower()[:1],
         )
-        if result == "y":
-            return True
-
-        return False
+        return result == "y"
 
     def selection_input(
         self,

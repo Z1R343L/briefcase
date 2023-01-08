@@ -48,8 +48,7 @@ def android_log_clean_filter(line):
         included for analysis purposes (i.e., it's Python content, not a system
         message).
     """
-    match = ANDROID_LOG_PREFIX_REGEX.match(line)
-    if match:
+    if match := ANDROID_LOG_PREFIX_REGEX.match(line):
         groups = match.groupdict()
         include = groups["component"] in {"python.stdout", "python.stderr"}
         return groups["content"], include
@@ -304,11 +303,7 @@ class GradleRunCommand(GradleMixin, RunCommand):
             )
 
         try:
-            if test_mode:
-                label = "test suite"
-            else:
-                label = "app"
-
+            label = "test suite" if test_mode else "app"
             self.logger.info(
                 f"Starting {label} on {name} (device ID {device})", prefix=app.app_name
             )

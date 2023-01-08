@@ -342,11 +342,7 @@ class iOSXcodeRunCommand(iOSXcodeMixin, RunCommand):
                 "Input has been disabled; can't select a device to target."
             ) from e
 
-        if test_mode:
-            label = "test suite"
-        else:
-            label = "app"
-
+        label = "test suite" if test_mode else "app"
         self.logger.info(
             f"Starting {label} on an {device} running iOS {iOS_version} (device UDID {udid})",
             prefix=app.app_name,

@@ -238,11 +238,7 @@ class CreateCommand(BaseCommand):
         """
         # If the app config doesn't explicitly define a template,
         # use a default template.
-        if app.template is None:
-            template = self.app_template_url
-        else:
-            template = app.template
-
+        template = self.app_template_url if app.template is None else app.template
         # If the app config doesn't explicitly define a template branch,
         # use the branch derived from the Briefcase version
         version = Version(briefcase.__version__)
@@ -378,31 +374,26 @@ class CreateCommand(BaseCommand):
                 custom_support_package = False
                 self.logger.info(f"Using support package {support_package_url}")
 
-            if support_package_url.startswith(("https://", "http://")):
-                if custom_support_package:
-                    # If the support package is custom, cache it using a hash of
-                    # the download URL. This is needed to differentiate to support
-                    # packages with the same filename, served at different URLs.
-                    # (or a custom package that collides with an official package name)
-                    download_path = (
-                        self.data_path
-                        / "support"
-                        / hashlib.sha256(
-                            support_package_url.encode("utf-8")
-                        ).hexdigest()
-                    )
-                else:
-                    download_path = self.data_path / "support"
-
-                # Download the support file, caching the result
-                # in the user's briefcase support cache directory.
-                return self.tools.download.file(
-                    url=support_package_url,
-                    download_path=download_path,
-                    role="support package",
-                )
-            else:
+            if not support_package_url.startswith(("https://", "http://")):
                 return Path(support_package_url)
+            download_path = (
+                (
+                    self.data_path
+                    / "support"
+                    / hashlib.sha256(
+                        support_package_url.encode("utf-8")
+                    ).hexdigest()
+                )
+                if custom_support_package
+                else self.data_path / "support"
+            )
+            # Download the support file, caching the result
+            # in the user's briefcase support cache directory.
+            return self.tools.download.file(
+                url=support_package_url,
+                download_path=download_path,
+                role="support package",
+            )
         except MissingNetworkResourceError as e:
             # If there is a custom support package, report the missing resource as-is.
             if custom_support_package:
@@ -612,62 +603,62 @@ class CreateCommand(BaseCommand):
             variant.
         :param target: The full path where the image should be installed.
         """
-        if source is not None:
-            if size is None:
-                if variant is None:
-                    source_filename = f"{source}{target.suffix}"
-                    full_role = role
-                else:
-                    try:
-                        full_role = f"{variant} {role}"
-                        source_filename = f"{source[variant]}{target.suffix}"
-                    except TypeError:
-                        source_filename = f"{source}-{variant}{target.suffix}"
-                    except KeyError:
-                        self.logger.info(
-                            f"Unknown variant {variant!r} for {role}; using default"
-                        )
-                        return
+        if source is None:
+            return
+        if size is None:
+            if variant is None:
+                source_filename = f"{source}{target.suffix}"
+                full_role = role
             else:
-                if variant is None:
-                    # An annoying edge case is the case of an unsized variant.
-                    # In that case, `size` is actually the variant, and the
-                    # source is a dictionary keyed by variant. Try that
-                    # lookup; if it fails, we have a sized image with no
-                    # variant.
-                    try:
-                        source_filename = f"{source[size]}{target.suffix}"
-                        full_role = f"{size} {role}"
-                    except TypeError:
-                        # The lookup on the source failed; that means we
-                        # have a sized image without variants.
-                        source_filename = f"{source}-{size}{target.suffix}"
-                        full_role = f"{size}px {role}"
-                else:
-                    try:
-                        full_role = f"{size}px {variant} {role}"
-                        source_filename = f"{source[variant]}-{size}{target.suffix}"
-                    except TypeError:
-                        source_filename = f"{source}-{variant}-{size}{target.suffix}"
-                    except KeyError:
-                        self.logger.info(
-                            f"Unknown variant {variant!r} for {size}px {role}; using default"
-                        )
-                        return
-
-            full_source = self.base_path / source_filename
-            if full_source.exists():
-                with self.input.wait_bar(
-                    f"Installing {source_filename} as {full_role}..."
-                ):
-                    # Make sure the target directory exists
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    # Copy the source image to the target location
-                    self.tools.shutil.copy(full_source, target)
-            else:
+                try:
+                    full_role = f"{variant} {role}"
+                    source_filename = f"{source[variant]}{target.suffix}"
+                except TypeError:
+                    source_filename = f"{source}-{variant}{target.suffix}"
+                except KeyError:
+                    self.logger.info(
+                        f"Unknown variant {variant!r} for {role}; using default"
+                    )
+                    return
+        elif variant is None:
+            # An annoying edge case is the case of an unsized variant.
+            # In that case, `size` is actually the variant, and the
+            # source is a dictionary keyed by variant. Try that
+            # lookup; if it fails, we have a sized image with no
+            # variant.
+            try:
+                source_filename = f"{source[size]}{target.suffix}"
+                full_role = f"{size} {role}"
+            except TypeError:
+                # The lookup on the source failed; that means we
+                # have a sized image without variants.
+                source_filename = f"{source}-{size}{target.suffix}"
+                full_role = f"{size}px {role}"
+        else:
+            try:
+                full_role = f"{size}px {variant} {role}"
+                source_filename = f"{source[variant]}-{size}{target.suffix}"
+            except TypeError:
+                source_filename = f"{source}-{variant}-{size}{target.suffix}"
+            except KeyError:
                 self.logger.info(
-                    f"Unable to find {source_filename} for {full_role}; using default"
+                    f"Unknown variant {variant!r} for {size}px {role}; using default"
                 )
+                return
+
+        full_source = self.base_path / source_filename
+        if full_source.exists():
+            with self.input.wait_bar(
+                f"Installing {source_filename} as {full_role}..."
+            ):
+                # Make sure the target directory exists
+                target.parent.mkdir(parents=True, exist_ok=True)
+                # Copy the source image to the target location
+                self.tools.shutil.copy(full_source, target)
+        else:
+            self.logger.info(
+                f"Unable to find {source_filename} for {full_role}; using default"
+            )
 
     def install_app_resources(self, app: BaseConfig):
         """Install the application resources (such as icons and splash screens)

@@ -332,11 +332,6 @@ class StaticWebRunCommand(StaticWebMixin, RunCommand):
                 with self.input.wait_bar("Shutting down server..."):
                     httpd.server_close()
 
-            # Not sure why, but this is needed to mollify coverage for the
-            # "test_cleanup_server_error" case. Without this pass, a missing branch
-            # is reported for the "if httpd: -> exit" branch
-            pass
-
         return {}
 
 

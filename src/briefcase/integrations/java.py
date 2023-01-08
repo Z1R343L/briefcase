@@ -208,19 +208,18 @@ class JDK(Tool):
             java = JDK(tools, java_home=java_home)
 
             if not java.exists():
-                if install:
-                    # We only display the warning messages on the pass where we actually
-                    # install the JDK.
-                    if install_message:
-                        tools.logger.warning(install_message)
-                    tools.logger.info(
-                        "The Java JDK was not found; downloading and installing...",
-                        prefix=cls.name,
-                    )
-                    java.install()
-                else:
+                if not install:
                     raise MissingToolError("Java")
 
+                # We only display the warning messages on the pass where we actually
+                # install the JDK.
+                if install_message:
+                    tools.logger.warning(install_message)
+                tools.logger.info(
+                    "The Java JDK was not found; downloading and installing...",
+                    prefix=cls.name,
+                )
+                java.install()
         tools.java = java
         return java
 

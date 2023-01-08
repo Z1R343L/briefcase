@@ -8,13 +8,12 @@ from briefcase.platforms.android.gradle import GradleCreateCommand
 
 @pytest.fixture
 def create_command(tmp_path, first_app_config):
-    command = GradleCreateCommand(
+    return GradleCreateCommand(
         logger=Log(),
         console=Console(),
         base_path=tmp_path / "base_path",
         data_path=tmp_path / "briefcase",
     )
-    return command
 
 
 def test_support_package_filename(create_command):

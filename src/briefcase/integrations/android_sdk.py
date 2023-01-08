@@ -164,8 +164,7 @@ class AndroidSDK(Tool):
         JDK.verify(tools=tools, install=install)
 
         sdk = None
-        sdk_root = tools.os.environ.get("ANDROID_SDK_ROOT")
-        if sdk_root:
+        if sdk_root := tools.os.environ.get("ANDROID_SDK_ROOT"):
             sdk = AndroidSDK(tools=tools, root_path=Path(sdk_root))
 
             if sdk.exists():
@@ -627,9 +626,7 @@ connection.
             ).strip()
 
             # AVD names are returned one per line.
-            if len(output) == 0:
-                return []
-            return output.split("\n")
+            return [] if len(output) == 0 else output.split("\n")
         except subprocess.CalledProcessError as e:
             raise BriefcaseCommandError("Unable to obtain Android emulator list") from e
 
@@ -1029,12 +1026,9 @@ In future, you can specify this device by running:
         avd_config = {}
         with self.avd_config_filename(avd).open("r") as f:
             for line in f:
-                try:
+                with suppress(ValueError):
                     key, value = line.rstrip().split("=", 1)
                     avd_config[key.strip()] = value.strip()
-                except ValueError:
-                    pass
-
         return avd_config
 
     def update_emulator_config(self, avd, updates):

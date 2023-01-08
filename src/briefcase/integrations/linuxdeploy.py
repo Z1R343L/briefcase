@@ -85,15 +85,14 @@ class LinuxDeployBase:
 
         tool = cls(tools, **kwargs)
         if not tool.exists():
-            if install:
-                tools.logger.info(
-                    cls.install_msg.format(full_name=cls.full_name),
-                    prefix="linuxdeploy",
-                )
-                tool.install()
-            else:
+            if not install:
                 raise MissingToolError(cls.name)
 
+            tools.logger.info(
+                cls.install_msg.format(full_name=cls.full_name),
+                prefix="linuxdeploy",
+            )
+            tool.install()
         if not is_plugin:
             tools.linuxdeploy = tool
 

@@ -23,11 +23,7 @@ class OpenCommand(BaseCommand):
         :param app: The application to open
         """
         project_path = self.project_path(app)
-        if not project_path.exists():
-            state = self.create_command(app, **options)
-        else:
-            state = None
-
+        state = None if project_path.exists() else self.create_command(app, **options)
         self.verify_app_tools(app)
 
         self.logger.info(

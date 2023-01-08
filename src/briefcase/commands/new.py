@@ -98,8 +98,7 @@ class NewCommand(BaseCommand):
         :returns: The candidate app name
         """
         normalized = unicodedata.normalize("NFKD", formal_name)
-        stripped = re.sub("[^0-9a-zA-Z_]+", "", normalized).lstrip("_")
-        if stripped:
+        if stripped := re.sub("[^0-9a-zA-Z_]+", "", normalized).lstrip("_"):
             return stripped.lower()
         else:
             # If stripping removes all the content,

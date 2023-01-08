@@ -233,19 +233,14 @@ VALID_BUNDLE_RE = re.compile(r"[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+$")
 
 def is_valid_bundle_identifier(bundle):
     # Ensure the bundle identifier follows the basi
-    if not VALID_BUNDLE_RE.match(bundle):
-        return False
-
-    for part in bundle.split("."):
-        # *Some* 2-letter country codes are valid identifiers,
-        # even though they're reserved words; see:
-        #    https://www.oracle.com/java/technologies/javase/codeconventions-namingconventions.html
-        # `.do` *should* be on this list, but as of Apr 2022, `.do` breaks
-        # the Android build tooling.
-        if is_reserved_keyword(part) and part not in {"in", "is"}:
-            return False
-
-    return True
+    return (
+        not any(
+            is_reserved_keyword(part) and part not in {"in", "is"}
+            for part in bundle.split(".")
+        )
+        if VALID_BUNDLE_RE.match(bundle)
+        else False
+    )
 
 
 # This is the canonical definition from PEP440, modified to include named groups
@@ -464,10 +459,7 @@ class AppConfig(BaseConfig):
 
         :param test_mode: Are we running in test mode?
         """
-        if test_mode:
-            return f"tests.{self.module_name}"
-        else:
-            return self.module_name
+        return f"tests.{self.module_name}" if test_mode else self.module_name
 
 
 def merge_config(config, data):
@@ -478,9 +470,7 @@ def merge_config(config, data):
     :param data: The new configuration data to merge into the configuration.
     """
     for option in ["requires", "sources", "test_requires", "test_sources"]:
-        value = data.pop(option, [])
-
-        if value:
+        if value := data.pop(option, []):
             config.setdefault(option, []).extend(value)
 
     config.update(data)

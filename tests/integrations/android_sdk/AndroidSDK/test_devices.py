@@ -10,7 +10,7 @@ def devices_result(name):
     """Load an adb devices result file from the sample directory, and return
     the content."""
     adb_samples = Path(__file__).parent / "devices"
-    with (adb_samples / (name + ".out")).open(encoding="utf-8") as adb_output_file:
+    with (adb_samples / f"{name}.out").open(encoding="utf-8") as adb_output_file:
         return adb_output_file.read()
 
 

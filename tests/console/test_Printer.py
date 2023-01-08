@@ -25,7 +25,7 @@ def test_call(capsys, printer, message, show, expected_console_output):
     assert capsys.readouterr().out == expected_console_output
     log = printer.export_log()
     assert len(log.splitlines()) == 1
-    assert " " + message + " " * 139 + "console.py" in log
+    assert f" {message}" + " " * 139 + "console.py" in log
 
 
 def test_to_console(capsys, printer):

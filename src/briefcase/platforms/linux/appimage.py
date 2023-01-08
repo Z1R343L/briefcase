@@ -195,8 +195,7 @@ class LinuxAppImageCreateCommand(LinuxAppImageMixin, CreateCommand):
         kwargs = super()._pip_kwargs(app)
 
         if self.use_docker:
-            mounts = self._requirements_mounts(app)
-            if mounts:
+            if mounts := self._requirements_mounts(app):
                 kwargs["mounts"] = mounts
 
         return kwargs
@@ -215,8 +214,7 @@ class LinuxAppImageOpenCommand(LinuxAppImageMostlyPassiveMixin, OpenCommand):
         # If we're using Docker, open an interactive shell in the container
         if self.use_docker:
             kwargs = {}
-            mounts = self._requirements_mounts(app)
-            if mounts:
+            if mounts := self._requirements_mounts(app):
                 kwargs["mounts"] = mounts
 
             self.tools[app].app_context.run(
@@ -260,7 +258,7 @@ class LinuxAppImageBuildCommand(LinuxAppImageMixin, BuildCommand):
 
             # Add any plugin-required environment variables
             for plugin in plugins.values():
-                env.update(plugin.env)
+                env |= plugin.env
 
             # Construct a path that has been prepended with the path to the plugins
             env["PATH"] = os.pathsep.join(

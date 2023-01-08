@@ -226,7 +226,7 @@ def test_module_name(name, module_name):
         version="1.2.3",
         bundle="org.beeware",
         description="A simple app",
-        sources=["src/" + module_name],
+        sources=[f"src/{module_name}"],
     )
 
     assert config.module_name == module_name

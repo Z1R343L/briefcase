@@ -60,8 +60,7 @@ class Download(Tool):
             # we need the *final* response. We look at either the `Content-Disposition`
             # header, or the final URL, to extract the cache filename.
             cache_full_name = urlparse(response.url).path
-            header_value = response.headers.get("Content-Disposition")
-            if header_value:
+            if header_value := response.headers.get("Content-Disposition"):
                 # Neither requests nor httplib provides a way to parse RFC6266 headers.
                 # The cgi module *did* have a way to parse these headers, but
                 # it was deprecated as part of PEP594. PEP594 recommends
