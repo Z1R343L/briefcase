@@ -50,7 +50,7 @@ def test_help(monkeypatch, tmp_path, capsys):
     )
 
     # No log file was written
-    assert len(list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.log"))) == 0
+    assert not list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.log"))
 
 
 def test_command(monkeypatch, tmp_path, capsys):
@@ -78,7 +78,7 @@ def test_command(monkeypatch, tmp_path, capsys):
     assert output.startswith("\nGenerating a new application 'Hello World'\n")
 
     # No log file was written
-    assert len(list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.log"))) == 0
+    assert not list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.log"))
 
 
 def test_command_error(monkeypatch, tmp_path, capsys):
@@ -98,7 +98,7 @@ def test_command_error(monkeypatch, tmp_path, capsys):
     )
 
     # Log files are not created for BriefcaseConfigError errors
-    assert len(list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.create.log"))) == 0
+    assert not list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.create.log"))
 
 
 def test_unknown_command_error(monkeypatch, pyproject_toml, capsys):
@@ -137,7 +137,7 @@ def test_interrupted_command(monkeypatch, pyproject_toml, tmp_path, capsys):
     assert "\nAborted by user.\n" in output
 
     # No log file was written
-    assert len(list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.create.log"))) == 0
+    assert not list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.create.log"))
 
 
 def test_interrupted_command_with_log(monkeypatch, pyproject_toml, tmp_path, capsys):
@@ -180,4 +180,4 @@ def test_test_failure(monkeypatch, pyproject_toml, tmp_path, capsys):
     assert output == ""
 
     # Log files are not created for BriefcaseTestSuiteFailures
-    assert len(list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.create.log"))) == 0
+    assert not list(tmp_path.glob(f"{Log.LOG_DIR}/briefcase.*.create.log"))

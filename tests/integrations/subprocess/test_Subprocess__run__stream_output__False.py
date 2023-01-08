@@ -96,7 +96,6 @@ def test_call_with_start_new_session(
             encoding=ANY,
             **run_kwargs,
         )
-        assert capsys.readouterr().out == ""
     else:
         mock_sub._subprocess.run.assert_called_with(
             ["hello", "world"],
@@ -105,7 +104,8 @@ def test_call_with_start_new_session(
             encoding=ANY,
             **run_kwargs,
         )
-        assert capsys.readouterr().out == ""
+
+    assert capsys.readouterr().out == ""
 
 
 @pytest.mark.parametrize(

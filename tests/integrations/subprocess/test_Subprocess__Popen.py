@@ -87,7 +87,6 @@ def test_call_with_start_new_session(
             encoding=ANY,
             **popen_kwargs,
         )
-        assert capsys.readouterr().out == ""
     else:
         mock_sub._subprocess.Popen.assert_called_with(
             ["hello", "world"],
@@ -96,7 +95,8 @@ def test_call_with_start_new_session(
             encoding=ANY,
             **popen_kwargs,
         )
-        assert capsys.readouterr().out == ""
+
+    assert capsys.readouterr().out == ""
 
 
 @pytest.mark.parametrize(

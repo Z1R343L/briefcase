@@ -618,21 +618,18 @@ class Subprocess(Tool):
                     # exit to avoid Python printing the exception to the console.
                     return
 
-                # readline should always return at least a newline (ie \n) UNLESS
-                # the underlying process is exiting/gone; then "" is returned.
-                if output_line:
-                    if filter_func:
-                        try:
-                            for filtered_output in filter_func(
-                                output_line.rstrip("\n")
-                            ):
-                                self.tools.logger.info(filtered_output)
-                        except StopStreaming:
-                            return
-                    else:
-                        self.tools.logger.info(output_line)
-                else:
+                if not output_line:
                     return
+                if filter_func:
+                    try:
+                        for filtered_output in filter_func(
+                            output_line.rstrip("\n")
+                        ):
+                            self.tools.logger.info(filtered_output)
+                    except StopStreaming:
+                        return
+                else:
+                    self.tools.logger.info(output_line)
         except Exception as e:
             self.tools.logger.error(
                 f"Error while streaming output: {e.__class__.__name__}: {e}"

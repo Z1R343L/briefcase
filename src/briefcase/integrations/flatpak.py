@@ -34,14 +34,13 @@ class Flatpak(Tool):
             output = tools.subprocess.check_output(["flatpak", "--version"]).strip("\n")
             parts = output.split(" ")
             try:
-                if parts[0] == "Flatpak":
-                    version = parts[1].split(".")
-                    if int(version[0]) < 1:
-                        raise BriefcaseCommandError(
-                            "Briefcase requires Flatpak 1.0 or later."
-                        )
-                else:
+                if parts[0] != "Flatpak":
                     raise ValueError(f"Unexpected tool name {parts[0]}")
+                version = parts[1].split(".")
+                if int(version[0]) < 1:
+                    raise BriefcaseCommandError(
+                        "Briefcase requires Flatpak 1.0 or later."
+                    )
             except (ValueError, IndexError):
                 tools.logger.warning(
                     """\
@@ -89,14 +88,13 @@ You must install both flatpak and flatpak-builder.
 
             parts = output.split(" ")
             try:
-                if parts[0] == "flatpak-builder":
-                    version = parts[1].split(".")
-                    if int(version[0]) < 1:
-                        raise BriefcaseCommandError(
-                            "Briefcase requires flatpak-builder 1.0 or later."
-                        )
-                else:
+                if parts[0] != "flatpak-builder":
                     raise ValueError(f"Unexpected tool name {parts[0]}")
+                version = parts[1].split(".")
+                if int(version[0]) < 1:
+                    raise BriefcaseCommandError(
+                        "Briefcase requires flatpak-builder 1.0 or later."
+                    )
             except (ValueError, IndexError):
                 tools.logger.warning(
                     """\
@@ -251,17 +249,15 @@ flatpak run {bundle}.{app_name}
             want to override the default main module for the app.
         :returns: A Popen object for the running app.
         """
-        if main_module:
-            # Set a BRIEFCASE_MAIN_MODULE environment variable
-            # to override the module at startup
-            kwargs = {
+        kwargs = (
+            {
                 "env": {
                     "BRIEFCASE_MAIN_MODULE": main_module,
                 }
             }
-        else:
-            kwargs = {}
-
+            if main_module
+            else {}
+        )
         return self.tools.subprocess.Popen(
             [
                 "flatpak",

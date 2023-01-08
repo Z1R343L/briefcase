@@ -3,10 +3,7 @@ import platform
 import pytest
 
 # Default encoding is platform specific.
-if platform.platform() == "Windows":
-    CONSOLE_ENCODING = "cp437"
-else:
-    CONSOLE_ENCODING = "UTF-8"
+CONSOLE_ENCODING = "cp437" if platform.platform() == "Windows" else "UTF-8"
 
 
 def test_no_overrides(mock_sub):

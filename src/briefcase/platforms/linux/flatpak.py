@@ -61,9 +61,8 @@ class LinuxFlatpakMixin(LinuxMixin):
     def flatpak_runtime(self, app):
         # Verify that either both or neither of runtime *and* sdk are specified
         try:
-            runtime = app.flatpak_runtime
             if hasattr(app, "flatpak_sdk"):
-                return runtime
+                return app.flatpak_runtime
             else:
                 raise BriefcaseConfigError(
                     "If you specify a custom Flatpak runtime, "
@@ -78,9 +77,8 @@ class LinuxFlatpakMixin(LinuxMixin):
     def flatpak_sdk(self, app):
         # Verify that either both or neither of runtime *and* sdk are specified
         try:
-            sdk = app.flatpak_sdk
             if hasattr(app, "flatpak_runtime"):
-                return sdk
+                return app.flatpak_sdk
             else:
                 raise BriefcaseConfigError(
                     "If you specify a custom Flatpak SDK, "

@@ -28,10 +28,7 @@ class WiX(Tool):
             not installed, raises MissingToolError.
         """
         self.tools = tools
-        if wix_home:
-            self.wix_home = wix_home
-        else:
-            self.wix_home = tools.base_path / "wix"
+        self.wix_home = wix_home or tools.base_path / "wix"
         self.bin_install = bin_install
 
     @property
@@ -77,9 +74,7 @@ class WiX(Tool):
                 "A Windows MSI installer can only be created on Windows."
             )
 
-        # Look for the WIX environment variable
-        wix_env = tools.os.environ.get("WIX")
-        if wix_env:
+        if wix_env := tools.os.environ.get("WIX"):
             wix_home = Path(wix_env)
 
             # Set up the paths for the WiX executables we will use.

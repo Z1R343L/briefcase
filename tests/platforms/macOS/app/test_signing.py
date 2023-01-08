@@ -95,11 +95,7 @@ def mock_codesign(results):
     """
 
     def _codesign(args, **kwargs):
-        if isinstance(results, list):
-            result = results.pop(0)
-        else:
-            result = results
-
+        result = results.pop(0) if isinstance(results, list) else results
         if result:
             raise subprocess.CalledProcessError(
                 returncode=1, cmd=args, stderr=f"{args[1]}: {result}"

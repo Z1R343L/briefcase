@@ -311,9 +311,7 @@ class DockerAppContext(Tool):
         if arg == sys.executable:
             return f"python{self.python_version}"
         arg = arg.replace(os.fsdecode(self.host_platform_path), "/app")
-        arg = arg.replace(os.fsdecode(self.host_data_path), self.docker_data_path)
-
-        return arg
+        return arg.replace(os.fsdecode(self.host_data_path), self.docker_data_path)
 
     def _dockerize_args(self, args, interactive=False, mounts=None, env=None):
         """Convert arguments and environment into a Docker-compatible form.

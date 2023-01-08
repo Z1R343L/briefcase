@@ -139,10 +139,7 @@ class BaseCommand(ABC):
         :param is_clone: Flag that Command was triggered by the user's requested Command;
             for instance, RunCommand can invoke UpdateCommand and/or BuildCommand.
         """
-        if base_path is None:
-            self.base_path = Path.cwd()
-        else:
-            self.base_path = base_path
+        self.base_path = Path.cwd() if base_path is None else base_path
         self.data_path = self.validate_data_path(data_path)
         self.apps = {} if apps is None else apps
         self.is_clone = is_clone
@@ -494,7 +491,7 @@ a custom location for Briefcase's tools.
             if path.rsplit("/", 1)[-1] == app.module_name
         ]
 
-        if len(app_home) == 0:
+        if not app_home:
             raise BriefcaseCommandError(
                 f"Unable to find code for application {app.app_name!r}"
             )

@@ -76,10 +76,8 @@ def test_error_handling(mock_tools, tmp_path, name, exception):
     """ADB.run() can parse errors returned by adb."""
     # Set up a mock command with a subprocess module that has with sample data loaded.
     adb_samples = Path(__file__).parent / "adb_errors"
-    with (adb_samples / (name + ".out")).open("r") as adb_output_file:
-        with (adb_samples / (name + ".returncode")).open(
-            encoding="utf-8"
-        ) as returncode_file:
+    with (adb_samples / f"{name}.out").open("r") as adb_output_file:
+        with (adb_samples / f"{name}.returncode").open(encoding="utf-8") as returncode_file:
             mock_tools.subprocess.check_output.side_effect = (
                 subprocess.CalledProcessError(
                     returncode=int(returncode_file.read().strip()),

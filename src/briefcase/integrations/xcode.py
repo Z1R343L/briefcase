@@ -179,11 +179,11 @@ you can re-run Briefcase.
         )
 
         if min_version is not None:
-            # Look for a line in the output that reads "Xcode X.Y.Z"
-            version_lines = [
-                line for line in output.split("\n") if line.startswith("Xcode ")
-            ]
-            if version_lines:
+            if version_lines := [
+                line
+                for line in output.split("\n")
+                if line.startswith("Xcode ")
+            ]:
                 # Split the content after the first space
                 # and split that content on the dots.
                 # Append 0's to fill any gaps caused by
@@ -229,38 +229,7 @@ you can re-run Briefcase.
             )
 
     except subprocess.CalledProcessError as e:
-        if " is a command line tools instance" in e.output:
-            # Commandline tools are currently selected. Look for the existence
-            # of the default folder; if that folder doesn't exist, we can't
-            # conclude that Xcode *isn't* installed.
-            if Path(xcode_location).exists():
-                preamble = """\
-Xcode appears to be installed, but the active developer directory is the Xcode
-command line tools. To make Xcode the active developer directory, run:
-"""
-            else:
-                preamble = """\
-You have the Xcode command line tools installed; however, Briefcase requires
-a full Xcode install. Xcode can be downloaded from the macOS App Store.
-
-Once you have installed Xcode, you can make it the active developer directory
-by running:
-"""
-
-            raise BriefcaseCommandError(
-                preamble
-                + """
-    $ sudo xcode-select --switch /Applications/Xcode.app
-
-Or, to use a version of Xcode installed in a non-default location:
-
-    $ sudo xcode-select --switch /path/to/Xcode.app
-
-and then re-run Briefcase.
-"""
-            ) from e
-
-        else:
+        if " is a command line tools instance" not in e.output:
             raise BriefcaseCommandError(
                 """\
 An Xcode install appears to exist, but Briefcase was unable to
@@ -274,6 +243,35 @@ You may need to re-install Xcode. Re-run Briefcase once that
 installation is complete.
 """
             ) from e
+            # Commandline tools are currently selected. Look for the existence
+            # of the default folder; if that folder doesn't exist, we can't
+            # conclude that Xcode *isn't* installed.
+        preamble = (
+            """\
+Xcode appears to be installed, but the active developer directory is the Xcode
+command line tools. To make Xcode the active developer directory, run:
+"""
+            if Path(xcode_location).exists()
+            else """\
+You have the Xcode command line tools installed; however, Briefcase requires
+a full Xcode install. Xcode can be downloaded from the macOS App Store.
+
+Once you have installed Xcode, you can make it the active developer directory
+by running:
+"""
+        )
+        raise BriefcaseCommandError(
+            preamble
+            + """
+    $ sudo xcode-select --switch /Applications/Xcode.app
+
+Or, to use a version of Xcode installed in a non-default location:
+
+    $ sudo xcode-select --switch /path/to/Xcode.app
+
+and then re-run Briefcase.
+"""
+        ) from e
 
 
 def confirm_xcode_license_accepted(tools: ToolCache):

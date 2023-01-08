@@ -104,9 +104,9 @@ def test_third_party_tools_available():
 
 def test_always_true(simple_tools, tmp_path):
     """Implicit boolean casts are always True."""
-    assert simple_tools or False
+    assert simple_tools
     simple_tools["app-1"].app_context = "tool"
-    assert simple_tools["app-1"] or False
+    assert simple_tools["app-1"]
 
 
 def test_mapping_protocol(simple_tools):
@@ -114,7 +114,7 @@ def test_mapping_protocol(simple_tools):
     simple_tools["app-1"].tool = "tool 1"
     simple_tools["app-2"].tool = "tool 2"
 
-    assert [app for app in simple_tools] == ["app-1", "app-2"]
+    assert list(simple_tools) == ["app-1", "app-2"]
     assert len(simple_tools) == 2
     assert simple_tools["app-1"].tool == "tool 1"
     assert simple_tools["app-2"].tool == "tool 2"

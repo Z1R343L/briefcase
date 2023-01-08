@@ -48,14 +48,7 @@ def test_check_output_windows_batch_script(mock_sub, batch_script):
     mock_sub.tools.input.release_console_control.assert_called_once()
 
 
-@pytest.mark.parametrize(
-    "cmdline, kwargs",
-    [
-        ([], dict()),
-        (["Hello", "World"], dict()),
-        (["Hello", "World"], dict(val1="value1", val2="value2")),
-    ],
-)
+@pytest.mark.parametrize("cmdline, kwargs", [([], {}), (["Hello", "World"], {}), (["Hello", "World"], dict(val1="value1", val2="value2"))])
 def test_negative_condition_not_controlled(mock_sub, cmdline, kwargs):
     """Passthrough to Subprocess if conditions to release console control are
     not met while the console is not controlled."""
@@ -73,14 +66,7 @@ def test_negative_condition_not_controlled(mock_sub, cmdline, kwargs):
     mock_sub.tools.input.release_console_control.assert_not_called()
 
 
-@pytest.mark.parametrize(
-    "cmdline, kwargs",
-    [
-        ([], dict()),
-        (["Hello", "World"], dict()),
-        (["Hello", "World"], dict(val1="value1", val2="value2")),
-    ],
-)
+@pytest.mark.parametrize("cmdline, kwargs", [([], {}), (["Hello", "World"], {}), (["Hello", "World"], dict(val1="value1", val2="value2"))])
 def test_negative_condition_controlled(mock_sub, cmdline, kwargs):
     """Passthrough to Subprocess if conditions to release console control are
     not met while the console is controlled."""

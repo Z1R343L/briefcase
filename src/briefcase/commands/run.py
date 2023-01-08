@@ -62,11 +62,7 @@ class LogFilter:
             included = True
 
         # If we're not using clean output, use the raw line for display.
-        if self.clean_output:
-            display_line = clean_line
-        else:
-            display_line = line
-
+        display_line = clean_line if self.clean_output else line
         # If the line is Python content, append the new line, then clip the
         # recent history to the most recent 10 clean lines, and build a single
         # string that is the tail of the recent clean lines.
@@ -175,19 +171,15 @@ class RunAppMixin:
                         raise BriefcaseCommandError(
                             "Test suite didn't report a result."
                         )
-                    else:
-                        self.logger.error("Test suite failed!", prefix=app.app_name)
-                        raise BriefcaseTestSuiteFailure()
+                    self.logger.error("Test suite failed!", prefix=app.app_name)
+                    raise BriefcaseTestSuiteFailure()
             elif log_stream:
                 # If we're monitoring a log stream, and the log stream reported a
                 # non-zero exit code, surface that error to the user.
                 if log_filter.returncode is not None and log_filter.returncode != 0:
                     raise BriefcaseCommandError(f"Problem running app {app.app_name}.")
-            else:
-                # If we're monitoring an actual app (not just a log stream),
-                # and the app didn't exit cleanly, surface the error to the user.
-                if popen.returncode != 0:
-                    raise BriefcaseCommandError(f"Problem running app {app.app_name}.")
+            elif popen.returncode != 0:
+                raise BriefcaseCommandError(f"Problem running app {app.app_name}.")
 
         except KeyboardInterrupt:
             pass  # Catch CTRL-C to exit normally

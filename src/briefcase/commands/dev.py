@@ -68,7 +68,7 @@ class DevCommand(RunAppMixin, BaseCommand):
 
         :param app: The config object for the app
         """
-        requires = app.requires if app.requires else []
+        requires = app.requires or []
         if app.test_requires:
             requires.extend(app.test_requires)
 
